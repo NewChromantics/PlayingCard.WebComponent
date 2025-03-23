@@ -18,22 +18,22 @@
 	
 }
 
-.SmallCard
+:host(.SmallCard)
 {
 	--cardWidth: 15pt;
 }
 
-.RattleOnce,
-.Rattle,
-.ScoringCard
+:host(.RattleOnce),
+:host(.Rattle),
+:host(.ScoringCard)
 {
 	animation-name: Rattle;
 	animation-duration: 0.18s;
 	animation-iteration-count: 3;
 }
 
-.Rattle,
-.ScoringCard
+:host(.Rattle),
+:host(.ScoringCard)
 {
 	animation-iteration-count: infinite;
 }
@@ -57,7 +57,7 @@
 	--cornerRadius: calc( max( 4px,10% ) );
 	
 	/* auto set a random delay on all anims */
-	animation-delay: calc( attr(Random ms) * 77ms );
+	animation-delay: calc( attr(random ms) * 77ms );
 	
 	xbox-sizing:	border-box;	/* border is part of size */
 	transition: all ease 0.1s;
