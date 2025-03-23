@@ -1,0 +1,205 @@
+:root,
+:host
+{
+	--paper: #eee;
+	--border: #aaa;
+	--backingColour: var(--suit-heart);
+	--suit-unknown: #aaa;
+	--suit-heart: #eb4034;
+	--suit-diamond: #d4962a;
+	--suit-spade: #333;
+	--suit-club: #2a60d4;
+	
+	/* 3.5 inches x 2.5 inches */
+	--cardWidth: 30pt;
+	--cardHeight: calc( var(--cardWidth) * 1.4 );
+	
+	--raisePx: 10px;
+	
+}
+
+.SmallCard
+{
+	--cardWidth: 15pt;
+}
+
+.RattleOnce,
+.Rattle,
+.ScoringCard
+{
+	animation-name: Rattle;
+	animation-duration: 0.18s;
+	animation-iteration-count: 3;
+}
+
+.Rattle,
+.ScoringCard
+{
+	animation-iteration-count: infinite;
+}
+
+@keyframes Rattle
+{
+	/* use rotate: (since 2022) instead of transform:rotate() so we can animate independetly from transform */
+	0%		{	rotate: 0deg;	}
+	50%		{	rotate: 4deg;	}
+	100%	{	rotate: -4deg;	}
+}
+
+
+:host
+{
+	--shadowHeight: 2px;
+	--shadowWidth: 1px;
+	--shadowRadius: 0.5px;
+	/* redeclare here to make --cardWidth override recalculate */
+	--cardHeight: calc( var(--cardWidth) * 1.4 );
+	--cornerRadius: calc( max( 4px,10% ) );
+	
+	/* auto set a random delay on all anims */
+	animation-delay: calc( attr(Random ms) * 77ms );
+	
+	xbox-sizing:	border-box;	/* border is part of size */
+	transition: all ease 0.1s;
+	
+	user-selection: none;
+	
+	position: relative; /* required for all after/befores */
+	
+	/*overflow:hidden; this hides the shadow on safari */
+	
+	display: inline-block;
+	width: var(--cardWidth);
+	height: var(--cardHeight);
+	background: var(--paper);
+	border-radius: var(--cornerRadius);
+	border: 1px solid var(--border);
+	margin:	0.2em;
+	padding: 0px;
+	font-family: "serif";
+	font-weight: bold;
+	font-size: calc( var(--cardWidth) * 0.5 );
+	text-align: center;
+	color: var(--suit-unknown);
+	filter: drop-shadow( var(--shadowWidth) var(--shadowHeight) var(--shadowRadius) rgba(0,0,0,0.5) );
+}
+
+:host([onclick])
+{
+	cursor: pointer;
+}
+/* only add hover on devices with hover capabilities */
+@media(hover) 
+{
+	:host([onclick]):hover
+	{
+		transform: translate( -1px, calc( var(--raisePx) * -1 ) ) rotate(-2deg);
+		xxborder-bottom: calc( var(--raisePx) * 1 ) solid rgba(0,0,0,0);
+		--shadowHeight: var(--raisePx);
+		--shadowWidth: 3px;
+		--shadowRadius: 3px;
+		/* when raised, make sure z is up */
+		z-index: 1;
+	}
+}
+
+
+:host:before,
+:host:after
+{
+	content: "\a0";
+	position: absolute;
+	width: 100%;
+	display: block;
+	font-size: calc( var(--cardWidth) * 0.5 );
+}
+
+
+/* show backing on unknown card */
+:host(:not([suit], [rank])):before
+{
+	
+	--backingBorderSize: 8%;
+	
+	transition: none;	/* reduce effects being out of sync - but not entirely */
+	background-color: var(--backingColour);
+	--none: rgba(0,0,0,0);
+	--hatch-color: var(--paper);
+	--hatch-gap: 5px;
+	--hatch-end: calc(var(--hatch-gap) + 1px);
+	--hatch-overall-size: calc( var(--hatch-gap) + 1px );
+	background-image:
+	repeating-linear-gradient(45deg, var(--none),var(--none) var(--hatch-gap), var(--hatch-color) var(--hatch-gap), var(--hatch-color) var(--hatch-end) ),
+	repeating-linear-gradient(-45deg, var(--none), var(--none) var(--hatch-gap), var(--hatch-color) var(--hatch-gap), var(--hatch-color) var(--hatch-end) );
+	background-size: var(--hatch-overall-size) var(--hatch-overall-size), var(--hatch-overall-size) var(--hatch-overall-size);
+	
+	top:	var(--backingBorderSize);
+	left:	var(--backingBorderSize);
+	right:	var(--backingBorderSize);
+	bottom:	var(--backingBorderSize);
+	width:	auto;
+	border-radius: var(--cornerRadius);
+}
+
+:host([image]):before
+{	
+	content: "\a0";
+	background-color: initial;
+	background-image: attr(image url); /* attr(key type) is correct, but as yet, unsupported https://developer.mozilla.org/en-US/docs/Web/CSS/attr#browser_compatibility */
+	background-image: var(--image);
+	background-repeat: no-repeat;
+	background-size: 100%;
+	bottom: 0px;
+	top: 0px;
+	background-position: center
+}
+
+:host:before 
+{
+	top:	0.3em;
+	content: "\a0" attr(rank) "\a0";	/* add non breaking space to make empty cards align */
+}
+:host([rank="11"]):before	{	content: "J";	}
+:host([rank="12"]):before	{	content: "Q";	}
+:host([rank="13"]):before	{	content: "K";	}
+:host([rank="14"]):before	{	content: "A";	}
+:host([rank="-1"]):before
+{	
+	content: "\a0";
+	background: url('Joker.svg');
+	background-repeat: no-repeat;
+	background-size: 80%;
+	bottom: 0px;
+	top: 0px;
+	background-position: center
+}	
+
+
+:host:after
+{
+	bottom:	0.3em;
+	content: "\a0" attr(suit) "\a0";	/* add non breaking space to make empty cards align */
+}
+
+:host([suit=Heart])	{	color: var(--suit-heart);	}
+:host([suit=Diamond])	{	color: var(--suit-diamond);	}
+:host([suit=Spade])	{	color: var(--suit-spade);	}
+:host([suit=Club])	{	color: var(--suit-club);	}
+:host([suit="*"])	{	color: rgba(0,0,0,0);	}
+
+:host([suit=Heart]):after
+{
+	content: "\2665";	/* &#9829 */
+}
+:host([suit=Diamond]):after
+{
+	content: "\2666";	/* &#9830 */
+}
+:host([suit=Spade]):after
+{
+	content: "\2660";	/* &#9824 */
+}
+:host([suit=Club]):after
+{
+	content: "\2663";	/* &#9827 */
+}
