@@ -118,7 +118,6 @@
 /* show backing on unknown card */
 :host(:not([suit], [rank])):before
 {
-	
 	--backingBorderSize: 8%;
 	
 	transition: none;	/* reduce effects being out of sync - but not entirely */
@@ -138,6 +137,7 @@
 	right:	var(--backingBorderSize);
 	bottom:	var(--backingBorderSize);
 	width:	auto;
+	/* round off background image */
 	border-radius: var(--cornerRadius);
 }
 
@@ -152,6 +152,8 @@
 	bottom: 0px;
 	top: 0px;
 	background-position: center
+	/* round off background image */
+	border-radius: var(--cornerRadius);
 }
 
 :host:before 
